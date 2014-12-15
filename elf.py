@@ -61,6 +61,14 @@ class Elf_Ehdr(object):
         self.e_version_in = binascii.hexlify(self.binaryFile[20:24])
         self.e_entry_in = binascii.hexlify(self.binaryFile[24:32])
         self.e_phoff_in = binascii.hexlify(self.binaryFile[32:40])
+        self.e_shoff_in = binascii.hexlify(self.binaryFile[40:48])
+        self.e_flags_in = binascii.hexlify(self.binaryFile[48:52])
+        self.e_ehsize_in = binascii.hexlify(self.binaryFile[52:54])
+        self.e_phentsize_in = binascii.hexlify(self.binaryFile[54:56])
+        self.e_phnum_in = binascii.hexlify(self.binaryFile[56:58])
+        self.e_shentsize_in = binascii.hexlify(self.binaryFile[58:60])
+        self.e_shnum_in = binascii.hexlify(self.binaryFile[60:62])
+        self.e_shstrndx_in = binascii.hexlify(self.binaryFile[62:64])
 
         self.e_ident_out = ""                       # |
         self.e_type_out = ""                        # |
@@ -271,18 +279,23 @@ class Elf_Ehdr(object):
 
         Bytes[32:40]
         e_phoff_in = Raw Bytes from Binary File
-        e_phoff_out = Decoded from Header File
+        e_phoff_out = Returns decimal value of number of bytes Program Header is offset into file
         :return:
         """
 
+        e_phoff_local = ""
+
         for n in range(32, 40):
             if int(binascii.hexlify(self.binaryFile[n]), 16) != 00:
-                self.e_phoff_out += binascii.hexlify(self.binaryFile[n])
+                e_phoff_local += binascii.hexlify(self.binaryFile[n])
             else:
                 pass
 
-        # TODO - i have to return a string but convert this to decimal before that happens
-        return "0x" + self.e_phoff_out + " (bytes into file)"
+        # converts from str to int, gets dec value then back to str for output
+        self.e_phoff_out = int(e_phoff_local, 16)
+        self.e_phoff_out = str(self.e_phoff_out)
+
+        return "Start of Program Headers: " + self.e_phoff_out + " (bytes into file)\n"
 
     def get_eshoff(self):
         """
@@ -290,11 +303,10 @@ class Elf_Ehdr(object):
         :return:
         """
 
-        self.e_shoff_in = binascii.hexlify(self.binaryFile[40:48])
+        self.e_shoff_out = self.e_shoff_in
 
-
-
-        return e_shoff_out
+        # TODO - convert to decimal
+        return "Start of Section Headers: " + self.e_shoff_out + " (bytes into file)\n"
 
     def get_eflags(self):
         """
@@ -302,8 +314,23 @@ class Elf_Ehdr(object):
         :return:
         """
 
-        e_flags = binascii.hexlify(self.binaryFile[48:52])
-        print e_flags
+        e_flags_local = ""
+
+        for n in range(48, 52):
+            if int(binascii.hexlify(self.binaryFile[n]), 16) != 00:
+                e_flags_local += binascii.hexlify(self.binaryFile[n])
+            else:
+                pass
+
+        if e_flags_local == "":
+            e_flags_local = "0x00"
+            self.e_flags_out = e_flags_local
+        else:
+            # TODO - How do I decode Processor flags? Are they defined in elf.h?
+            self.e_flags_out = int(e_flags_local, 16)
+            self.e_flags_out = str(self.e_flags_out)
+
+        return "Flags: " + self.e_flags_out + "\n"
 
     def get_eehsize(self):
         """
@@ -311,7 +338,18 @@ class Elf_Ehdr(object):
         :return:
         """
 
-        e_ehsize = binascii.hexlify(self.binaryFile[52:54])
+        e_ehsize_local = ""
+
+        for n in range(52, 54):
+            if int(binascii.hexlify(self.binaryFile[n]), 16) != 00:
+                e_ehsize_local += binascii.hexlify(self.binaryFile[n])
+            else:
+                pass
+
+        self.e_ehsize_out = int(e_ehsize_local, 16)
+        self.e_ehsize_out = str(self.e_ehsize_out)
+
+        return "Size of this header: " + self.e_ehsize_out + " (bytes) \n"
 
     def get_ephentsize(self):
         """
@@ -319,7 +357,18 @@ class Elf_Ehdr(object):
         :return:
         """
 
-        e_phentsize = binascii.hexlify(self.binaryFile[54:56])
+        e_phentsize_local = ""
+
+        for n in range(54, 56):
+            if int(binascii.hexlify(self.binaryFile[n]), 16) != 00:
+                e_phentsize_local += binascii.hexlify(self.binaryFile[n])
+            else:
+                pass
+
+        self.e_phentsize_out = int(e_phentsize_local, 16)
+        self.e_phentsize_out = str(self.e_phentsize_out)
+
+        return "Size of program headers: " + self.e_phentsize_out + " (bytes) \n"
 
     def get_ephnum(self):
         """
@@ -327,7 +376,18 @@ class Elf_Ehdr(object):
         :return:
         """
 
-        e_phnum = binascii.hexlify(self.binaryFile[56:58])
+        e_phnum_local = ""
+
+        for n in range(56, 58):
+            if int(binascii.hexlify(self.binaryFile[n]), 16) != 00:
+                e_phnum_local += binascii.hexlify(self.binaryFile[n])
+            else:
+                pass
+
+        self.e_phnum_out = int(e_phnum_local, 16)
+        self.e_phnum_out = str(self.e_phnum_out)
+
+        return "Number of Program Headers: " + self.e_phnum_out + "\n"
 
     def get_eshentsize(self):
         """
@@ -335,7 +395,18 @@ class Elf_Ehdr(object):
         :return:
         """
 
-        e_shentsize = binascii.hexlify(self.binaryFile[58:60])
+        e_shentsize_local = ""
+
+        for n in range(58, 60):
+            if int(binascii.hexlify(self.binaryFile[n]), 16) != 00:
+                e_shentsize_local += binascii.hexlify(self.binaryFile[n])
+            else:
+                pass
+
+        self.e_shentsize_out = int(e_shentsize_local, 16)
+        self.e_shentsize_out = str(self.e_shentsize_out)
+
+        return "Size of Section Headers: " + self.e_shentsize_out + " (bytes) \n"
 
     def get_eshnum(self):
         """
@@ -343,7 +414,18 @@ class Elf_Ehdr(object):
         :return:
         """
 
-        e_shnum = binascii.hexlify(self.binaryFile[60:62])
+        e_shnum_local = ""
+
+        for n in range(60, 62):
+            if int(binascii.hexlify(self.binaryFile[n]), 16) != 00:
+                e_shnum_local += binascii.hexlify(self.binaryFile[n])
+            else:
+                pass
+
+        self.e_shnum_out = int(e_shnum_local, 16)
+        self.e_shnum_out = str(self.e_shnum_out)
+
+        return "Number of Section Headers: " + self.e_shnum_out + "\n"
 
     def get_eshstrndx(self):
         """
@@ -351,7 +433,18 @@ class Elf_Ehdr(object):
         :return:
         """
 
-        e_shstrndx = binascii.hexlify(self.binaryFile[62:64])
+        e_shstrndx_local = ""
+
+        for n in range(62, 64):
+            if int(binascii.hexlify(self.binaryFile[n]), 16) != 00:
+                e_shstrndx_local += binascii.hexlify(self.binaryFile[n])
+            else:
+                pass
+
+        self.e_shstrndx_out = int(e_shstrndx_local, 16)
+        self.e_shstrndx_out = str(self.e_shstrndx_out)
+
+        return "Section header string table index: " + self.e_shstrndx_out + "\n"
 
     def get_all_ehdr(self):
         """
@@ -361,7 +454,9 @@ class Elf_Ehdr(object):
         # TODO - Populate dictionary where key=struct_field and value is byte value
 
         print self.get_eident() + self.get_etype() + self.get_emachine() + self.get_eversion() \
-            + self.get_eentry() + self.get_ephoff()
+            + self.get_eentry() + self.get_ephoff() + self.get_eshoff() + self.get_eflags() \
+            + self.get_eehsize() + self.get_ephentsize() + self.get_ephnum() + self.get_eshentsize() \
+            + self.get_eshnum() + self.get_eshstrndx()
 
 """
                                     Section Header
