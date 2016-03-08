@@ -231,6 +231,8 @@ class Elf_Ehdr(object):
             self.e_machine_out += "ARM \n"
         elif int(self.e_machine_in, 16) == 62:
             self.e_machine_out += "x86-64 Architecture, "
+        elif int(self.e_machine_in, 16) == 183:
+            self.e_machine_out += "AArch64 "
         else:
             print "I was lazy and didn't implement your code: " + self.e_machine_in
 
